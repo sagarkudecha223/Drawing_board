@@ -1,0 +1,11 @@
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+<svg fill="#000000" width="800px" height="800px" viewBox="-7 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
+
+<g id="SVGRepo_bgCarrier" stroke-width="0"/>
+
+<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
+
+<g id="SVGRepo_iconCarrier"> <title>undo</title> <path d="M7.75 13.313v2.063c0 0.438-0.344 0.625-0.688 0.375l-6.781-4.875c-0.375-0.25-0.375-0.719 0-0.969l6.781-4.906c0.344-0.25 0.688-0.094 0.688 0.344v2.031c1.531 0 4.688 0.188 6.75 1.531 4.719 3.094 7.438 13.219-8 18.344 0 0 9.313-4.656 7.688-11.063-0.406-1.719-2.313-3.25-6.438-2.875z"/> </g>
+
+</svg>

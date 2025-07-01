@@ -24,6 +24,7 @@ dependencies:
   gap: 3.0.1
   sizer: 3.0.5
   flutter_animate: 4.5.2
+  flutter_svg:
 
 dev_dependencies:
   flutter_test:
@@ -38,11 +39,11 @@ flutter:
 
   uses-material-design: true
 
-#  assets:
-#    - assets/images/
 
+  assets:
+    - assets/images/
 
-#  fonts:
-#    - family: Poppins
-#      fonts:
-#        - asset: assets/fonts/poppins.ttf
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/poppins.ttf
