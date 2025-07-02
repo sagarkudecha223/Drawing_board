@@ -6,27 +6,36 @@ import 'icon_button.dart';
 import 'svg_icon.dart';
 
 class CommonIconButton extends StatelessWidget {
-  final Color backgroundColor;
+  final Color? backgroundColor;
   final String svgIcon;
   final Function() onTap;
+  final bool isSelected;
 
   const CommonIconButton({
     super.key,
-    required this.backgroundColor,
+    this.backgroundColor,
     required this.svgIcon,
     required this.onTap,
+    this.isSelected = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return AppIconButton(
-      backgroundColor: backgroundColor,
+      backgroundColor:
+          isSelected
+              ? AppColors.selectedIconBackgroundColor
+              : backgroundColor ?? AppColors.backgroundColor,
       hasBorder: true,
+      borderRadius: Dimens.radiusSmall,
       borderColor: AppColors.borderColor,
+      elevation: Dimens.elevationSmall,
+      shadowColor: AppColors.shadowColor,
       iconWidget: AppSvgIcon(
         svgIcon,
-        color: AppColors.white,
-        height: Dimens.iconSmall,
+        color: isSelected ? AppColors.selectedIconColor : AppColors.iconColor,
+        height: Dimens.iconXSmall,
+        width: Dimens.iconXSmall,
       ),
       onTap: onTap,
     );

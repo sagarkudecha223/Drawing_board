@@ -7,7 +7,7 @@ extension AppLoaderThemeColor on AppLoaderTheme {
   Color get backgroundColor {
     switch (this) {
       case AppLoaderTheme.light:
-        return AppColors.primary;
+        return AppColors.primaryBlue1;
       case AppLoaderTheme.dark:
         return AppColors.secondary;
     }
@@ -58,6 +58,34 @@ extension DrawingModeExtension on DrawingMode {
         return Images.imagesIcon;
       case DrawingMode.selectionMode:
         return Images.selection;
+    }
+  }
+}
+
+extension PaintingToolsExtension on PaintTools {
+  String get icon {
+    switch (this) {
+      case PaintTools.freeHand:
+        return Images.pencil;
+      case PaintTools.rectangle:
+        return Images.rectangle;
+      case PaintTools.circle:
+        return Images.circle;
+      case PaintTools.arrow:
+        return Images.arrowUp;
+    }
+  }
+
+  String get tooltip {
+    switch (this) {
+      case PaintTools.freeHand:
+        return 'Free Hand';
+      case PaintTools.rectangle:
+        return 'Rectangle';
+      case PaintTools.circle:
+        return 'Circle';
+      case PaintTools.arrow:
+        return 'Arrow';
     }
   }
 }

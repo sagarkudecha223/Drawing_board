@@ -5,7 +5,6 @@ import 'package:flutter_base_architecture_plugin/imports/dart_package_imports.da
 import '../../bloc/drawing_board/drawing_board_bloc.dart';
 import '../../bloc/drawing_board/drawing_board_contract.dart';
 import '../../core/dimens.dart';
-import '../../core/enum.dart';
 import '../controllers/drawing_mode/drawing_mode_view.dart';
 import '../painter/drawing_painter.dart';
 
@@ -67,7 +66,7 @@ class _GestureDetector extends StatelessWidget {
             details.globalPosition,
             Colors.white,
             1.0,
-            PaintTools.freeHand,
+            bloc.state.paintingTools,
             '',
             // bloc.state.selectedColor.withAlpha(bloc.state.alpha),
             // bloc.state.strokeWidth,

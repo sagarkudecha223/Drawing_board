@@ -6,11 +6,7 @@ class MeasureSize extends StatefulWidget {
   final Widget child;
   final OnWidgetSizeChange onChange;
 
-  const MeasureSize({
-    super.key,
-    required this.onChange,
-    required this.child,
-  });
+  const MeasureSize({super.key, required this.child, required this.onChange});
 
   @override
   State<MeasureSize> createState() => _MeasureSizeState();
@@ -27,7 +23,7 @@ class _MeasureSizeState extends State<MeasureSize> {
   }
 
   @override
-  void didUpdateWidget(MeasureSize oldWidget) {
+  void didUpdateWidget(covariant MeasureSize oldWidget) {
     super.didUpdateWidget(oldWidget);
     WidgetsBinding.instance.addPostFrameCallback((_) => _notifySize());
   }
@@ -35,18 +31,18 @@ class _MeasureSizeState extends State<MeasureSize> {
   void _notifySize() {
     final context = _key.currentContext;
     if (context == null) return;
-    final newSize = context.size;
-    if (_oldSize == newSize || newSize == null) return;
+    final renderBox = context.findRenderObject() as RenderBox?;
+    if (renderBox == null || !renderBox.hasSize) return;
 
-    _oldSize = newSize;
-    widget.onChange(newSize);
+    final newSize = renderBox.size;
+    if (_oldSize != newSize) {
+      _oldSize = newSize;
+      widget.onChange(newSize);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      key: _key,
-      child: widget.child,
-    );
+    return Container(key: _key, child: widget.child);
   }
 }

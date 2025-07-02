@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-
 import 'measure_size.dart';
 
 class AnimatedInitList extends StatefulWidget {
@@ -26,8 +25,9 @@ class AnimatedInitList extends StatefulWidget {
 class _AnimatedInitListState extends State<AnimatedInitList> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
 
-  final List<Widget> _animatedItems = [];
+  List<Widget> _animatedItems = [];
   double? _itemHeight;
+  double? _itemWeight;
   bool _isPlaying = false;
 
   @override
@@ -46,14 +46,18 @@ class _AnimatedInitListState extends State<AnimatedInitList> {
         _playReverse();
       }
     }
+    if (oldWidget.children != widget.children) {
+      _animatedItems = [...widget.children];
+    }
   }
 
   Future<void> _playForward() async {
     if (_isPlaying) return;
     _isPlaying = true;
+    _animatedItems.clear();
 
     for (int i = 0; i < widget.children.length; i++) {
-      await Future.delayed(const Duration(milliseconds: 150));
+      await Future.delayed(const Duration(milliseconds: 100));
       _animatedItems.add(widget.children[i]);
       _listKey.currentState?.insertItem(i);
     }
@@ -64,9 +68,9 @@ class _AnimatedInitListState extends State<AnimatedInitList> {
   Future<void> _playReverse() async {
     if (_isPlaying) return;
     _isPlaying = true;
-
+    _animatedItems = [...widget.children];
     for (int i = _animatedItems.length - 1; i >= 0; i--) {
-      await Future.delayed(const Duration(milliseconds: 150));
+      await Future.delayed(const Duration(milliseconds: 100));
       final removedItem = _animatedItems.removeAt(i);
       _listKey.currentState?.removeItem(
         i,
@@ -95,11 +99,20 @@ class _AnimatedInitListState extends State<AnimatedInitList> {
       itemBuilder: (context, index, animation) {
         Widget item = _animatedItems[index];
 
-        if (_itemHeight == null &&
-            index == 0 &&
-            widget.direction == Axis.horizontal) {
+        if (index == 0 &&
+            widget.direction == Axis.horizontal &&
+            _itemHeight == null) {
           item = MeasureSize(
             onChange: (size) => setState(() => _itemHeight = size.height),
+            child: item,
+          );
+        }
+
+        if (index == 0 &&
+            widget.direction == Axis.vertical &&
+            _itemWeight == null) {
+          item = MeasureSize(
+            onChange: (size) => setState(() => _itemWeight = size.width),
             child: item,
           );
         }
@@ -114,8 +127,11 @@ class _AnimatedInitListState extends State<AnimatedInitList> {
       },
     );
 
-    if (_itemHeight != null && widget.direction == Axis.horizontal) {
+    if (widget.direction == Axis.horizontal && _itemHeight != null) {
       return SizedBox(height: _itemHeight, child: listWidget);
+    }
+    if (widget.direction == Axis.vertical && _itemWeight != null) {
+      return SizedBox(width: _itemWeight, child: listWidget);
     }
 
     return listWidget;
@@ -156,7 +172,7 @@ class _AnimatedItem extends StatelessWidget {
               ).animate(animation),
           child: RotationTransition(
             turns:
-                turns ?? Tween<double>(begin: 0.5, end: 1.0).animate(animation),
+                turns ?? Tween<double>(begin: 0.3, end: 1.0).animate(animation),
             child: item,
           ),
         ),
