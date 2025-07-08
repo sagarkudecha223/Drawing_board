@@ -62,30 +62,54 @@ extension DrawingModeExtension on DrawingMode {
   }
 }
 
-extension PaintingToolsExtension on PaintTools {
+extension PaintingToolsExtension on PaintingTools {
   String get icon {
     switch (this) {
-      case PaintTools.freeHand:
+      case PaintingTools.freeHand:
         return Images.pencil;
-      case PaintTools.rectangle:
+      case PaintingTools.rectangle:
         return Images.rectangle;
-      case PaintTools.circle:
+      case PaintingTools.circle:
         return Images.circle;
-      case PaintTools.arrow:
+      case PaintingTools.arrow:
         return Images.arrowUp;
     }
   }
 
   String get tooltip {
     switch (this) {
-      case PaintTools.freeHand:
+      case PaintingTools.freeHand:
         return 'Free Hand';
-      case PaintTools.rectangle:
+      case PaintingTools.rectangle:
         return 'Rectangle';
-      case PaintTools.circle:
+      case PaintingTools.circle:
         return 'Circle';
-      case PaintTools.arrow:
+      case PaintingTools.arrow:
         return 'Arrow';
+    }
+  }
+}
+
+extension SvgImageOptionsExtension on SvgImageOptions {
+  String get image {
+    switch (this) {
+      case SvgImageOptions.spiderWeb:
+        return Images.spiderWeb;
+      case SvgImageOptions.star:
+        return Images.star;
+      case SvgImageOptions.cross:
+        return Images.cross;
+      }
+  }
+
+  String get toolTip {
+    switch (this) {
+      case SvgImageOptions.spiderWeb:
+        return 'Spider Web';
+      case SvgImageOptions.star:
+        return 'Star';
+      case SvgImageOptions.cross:
+        return 'Cross';
     }
   }
 }

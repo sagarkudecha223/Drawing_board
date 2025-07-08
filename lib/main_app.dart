@@ -6,7 +6,6 @@ import 'bloc/main_app/main_app_bloc.dart';
 import 'bloc/main_app/main_app_contract.dart';
 import 'core/colors.dart';
 import 'core/constants.dart';
-import 'core/dimens.dart';
 import 'core/routes.dart';
 import 'services/theme_service/app_theme.dart';
 
@@ -26,31 +25,6 @@ class _EntryPointState extends BaseState<MainAppBloc, EntryPoint>
     super.initState();
     bloc.add(InitEvent());
     WidgetsBinding.instance.addObserver(this);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      deviceSize = MediaQuery.of(context).size;
-      _updateDeviceType();
-    });
-  }
-
-  _compareSize() {
-    if (deviceSize != null && deviceSize != MediaQuery.of(context).size) {
-      _updateDeviceType();
-    }
-  }
-
-  void _updateDeviceType() {
-    final size = MediaQuery.of(context).size.shortestSide;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (size < 450) {
-        Dimens.setDeviceType(DeviceType.mobile);
-      } else if (size < 850) {
-        Dimens.setDeviceType(DeviceType.tablet);
-      } else {
-        Dimens.setDeviceType(DeviceType.desktop);
-      }
-      _forceRebuildWidgets();
-      deviceSize = MediaQuery.of(context).size;
-    });
   }
 
   @override
@@ -99,19 +73,13 @@ class _EntryPointState extends BaseState<MainAppBloc, EntryPoint>
       create: (_) => bloc,
       child: BlocBuilder<MainAppBloc, MainAppData>(
         builder:
-            (_, __) => LayoutBuilder(
-              builder: (_, __) {
-                _compareSize();
-                return MaterialApp.router(
-                  themeMode:
-                      AppColors.isLightTheme ? ThemeMode.light : ThemeMode.dark,
-                  darkTheme: AppTheme.darkTheme,
-                  routerConfig: router,
-                  debugShowCheckedModeBanner: false,
-                  supportedLocales:
-                      AppConstants.localizationList.toLocaleList(),
-                );
-              },
+            (context, state) => MaterialApp.router(
+              themeMode:
+                  AppColors.isLightTheme ? ThemeMode.light : ThemeMode.dark,
+              darkTheme: AppTheme.darkTheme,
+              routerConfig: router,
+              debugShowCheckedModeBanner: false,
+              supportedLocales: AppConstants.localizationList.toLocaleList(),
             ),
       ),
     );

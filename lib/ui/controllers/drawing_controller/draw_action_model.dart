@@ -6,7 +6,7 @@ class DrawActionModel {
   final List<Offset> points;
   final Color color;
   final double strokeWidth;
-  final PaintTools shape;
+  final PaintingTools shape;
   String? text;
   double? width;
   double? height;

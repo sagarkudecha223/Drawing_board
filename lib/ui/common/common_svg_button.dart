@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../core/colors.dart';
 import '../../core/dimens.dart';
 import 'icon_button.dart';
-import 'svg_icon.dart';
 
 class CommonIconButton extends StatelessWidget {
   final Color? backgroundColor;
@@ -27,16 +26,13 @@ class CommonIconButton extends StatelessWidget {
               ? AppColors.selectedIconBackgroundColor
               : backgroundColor ?? AppColors.backgroundColor,
       hasBorder: true,
-      borderRadius: Dimens.radiusSmall,
+      borderRadius: Dimens.radiusMedium,
       borderColor: AppColors.borderColor,
       elevation: Dimens.elevationSmall,
       shadowColor: AppColors.shadowColor,
-      iconWidget: AppSvgIcon(
-        svgIcon,
-        color: isSelected ? AppColors.selectedIconColor : AppColors.iconColor,
-        height: Dimens.iconXSmall,
-        width: Dimens.iconXSmall,
-      ),
+      svgImage: svgIcon,
+      imageColor:
+          isSelected ? AppColors.selectedIconColor : AppColors.iconColor,
       onTap: onTap,
     );
   }

@@ -4,8 +4,11 @@ import 'package:flutter_base_architecture_plugin/imports/dart_package_imports.da
 
 import '../../bloc/drawing_board/drawing_board_bloc.dart';
 import '../../bloc/drawing_board/drawing_board_contract.dart';
+import '../../core/app_extension.dart';
 import '../../core/dimens.dart';
+import '../../core/enum.dart';
 import '../controllers/drawing_mode/drawing_mode_view.dart';
+import '../controllers/image_controller/image_controller.dart';
 import '../painter/drawing_painter.dart';
 
 class DrawingBoardScreen extends StatefulWidget {
@@ -42,9 +45,16 @@ class _MainContent extends StatelessWidget {
     return Stack(
       clipBehavior: Clip.antiAliasWithSaveLayer,
       children: [
+        IgnorePointer(
+          ignoring: !(bloc.state.drawingMode == DrawingMode.addImageMode),
+          child: ImageDrawWidget(
+            controller: bloc.state.drawingController,
+            svgColor: bloc.state.selectedColor,
+          ),
+        ),
         Positioned.fill(child: _GestureDetector(bloc: bloc)),
         Padding(
-          padding: EdgeInsets.all(Dimens.spaceSmall),
+          padding: const EdgeInsets.all(Dimens.spaceSmall),
           child: DrawingModeView(bloc: bloc),
         ),
       ],
@@ -63,15 +73,12 @@ class _GestureDetector extends StatelessWidget {
       behavior: HitTestBehavior.translucent,
       onPanStart:
           (details) => bloc.state.drawingController.startDrawing(
-            details.globalPosition,
-            Colors.white,
+            details.localPosition,
+            bloc.state.selectedColor,
             1.0,
             bloc.state.paintingTools,
-            '',
-            // bloc.state.selectedColor.withAlpha(bloc.state.alpha),
-            // bloc.state.strokeWidth,
-            // bloc.state.selectedPaintingTools,
-            // bloc.state.selectedSvg,
+            bloc.state.selectedSvgImage.image,
+            bloc.state.drawingMode == DrawingMode.addImageMode,
           ),
       onPanUpdate:
           (details) =>

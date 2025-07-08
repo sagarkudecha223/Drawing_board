@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/colors.dart';
 import '../../../core/constants.dart';
 import '../../../core/enum.dart';
 import 'draw_action_model.dart';
@@ -20,29 +21,30 @@ class CustomDrawingController extends ValueNotifier<List<DrawActionModel>> {
     Offset point,
     Color color,
     double strokeWidth,
-    PaintTools tools,
-    String image,
+    PaintingTools tools,
+    String? image,
+    bool isImageMode,
   ) {
     _currentAction = DrawActionModel(
       points: [point],
-      color: color,
+      color: isImageMode ? AppColors.transparent : color,
       strokeWidth: strokeWidth,
       shape: tools,
-      svgAsset: tools == PaintingTools.svg ? image : null,
+      svgAsset: isImageMode ? image : null,
     );
     value = [...value, _currentAction!];
   }
 
   void updateDrawing(Offset point) {
     if (_currentAction != null) {
-      if (_currentAction!.shape == PaintingTools.svg) {
+      if (_currentAction!.svgAsset != null) {
         if (_currentAction!.points.length == 1) {
           _currentAction!.points.add(point);
         } else {
           _currentAction!.points[1] = point;
         }
       } else {
-        if (_currentAction!.shape == PaintTools.freeHand) {
+        if (_currentAction!.shape == PaintingTools.freeHand) {
           _currentAction!.points.add(point);
         } else if (_currentAction!.points.length == 1) {
           _currentAction!.points.add(point);

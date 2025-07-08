@@ -8,6 +8,7 @@ class AnimatedInitList extends StatefulWidget {
   final Axis direction;
   final Animation<double>? rotationValue;
   final Animation<Offset>? slidePosition;
+  final VoidCallback? onReverseComplete;
 
   const AnimatedInitList({
     super.key,
@@ -16,6 +17,7 @@ class AnimatedInitList extends StatefulWidget {
     this.direction = Axis.vertical,
     this.rotationValue,
     this.slidePosition,
+    this.onReverseComplete,
   });
 
   @override
@@ -86,6 +88,7 @@ class _AnimatedInitListState extends State<AnimatedInitList> {
     }
 
     _isPlaying = false;
+    widget.onReverseComplete?.call();
   }
 
   @override

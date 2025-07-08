@@ -5,7 +5,6 @@ import '../../core/dimens.dart';
 import 'app_loader.dart';
 import 'svg_icon.dart';
 
-
 class AppIconButton extends StatelessWidget {
   final String? svgImage;
   final Widget? iconWidget;
@@ -25,6 +24,7 @@ class AppIconButton extends StatelessWidget {
   final VisualDensity? visualDensity;
   final double? elevation;
   final Color? shadowColor;
+  final Size? fixedSize;
 
   const AppIconButton({
     super.key,
@@ -46,6 +46,7 @@ class AppIconButton extends StatelessWidget {
     this.visualDensity,
     this.elevation,
     this.shadowColor,
+    this.fixedSize,
   });
 
   @override
@@ -58,39 +59,40 @@ class AppIconButton extends StatelessWidget {
         elevation: elevation,
         shadowColor: shadowColor,
         disabledBackgroundColor:
-        isLoading
-            ? AppColors.transparent
-            : disabledColor ?? AppColors.secondaryGrey2,
-        padding: EdgeInsets.all(Dimens.padding3xSmall),
+            isLoading
+                ? AppColors.transparent
+                : disabledColor ?? AppColors.secondaryGrey2,
+        padding: const EdgeInsets.all(Dimens.padding3xSmall),
         shape: RoundedRectangleBorder(
           side: BorderSide(
             color: borderColor ?? AppColors.borderColor,
             width: borderWidth ?? Dimens.borderWidthSmall,
             style:
-            hasBorder || isLoading ? BorderStyle.solid : BorderStyle.none,
+                hasBorder || isLoading ? BorderStyle.solid : BorderStyle.none,
           ),
           borderRadius: BorderRadius.circular(
             borderRadius ?? Dimens.radius3xLarge,
           ),
         ),
+        fixedSize: fixedSize ?? Size(Dimens.icon2xLarge, Dimens.icon2xLarge),
       ),
       icon:
-      isLoading
-          ? SizedBox(
-        width: Dimens.iconXSmall,
-        height: Dimens.iconXSmall,
-        child: loadingWidget ?? const AppLoader(),
-      )
-          : IgnorePointer(
-        child:
-        iconWidget ??
-            _SvgIcon(
-              image: svgImage!,
-              color: imageColor ?? AppColors.iconColor,
-              imageHeight: imageHeight ?? Dimens.iconMedium,
-              imageWidth: imageWidth ?? Dimens.iconMedium,
-            ),
-      ),
+          isLoading
+              ? SizedBox(
+                width: Dimens.iconXSmall,
+                height: Dimens.iconXSmall,
+                child: loadingWidget ?? const AppLoader(),
+              )
+              : IgnorePointer(
+                child:
+                    iconWidget ??
+                    _SvgIcon(
+                      image: svgImage!,
+                      color: imageColor ?? AppColors.iconColor,
+                      imageHeight: imageHeight ?? Dimens.iconMedium,
+                      imageWidth: imageWidth ?? Dimens.iconMedium,
+                    ),
+              ),
     );
   }
 }

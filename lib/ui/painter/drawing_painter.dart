@@ -20,18 +20,18 @@ class DrawingPainter extends CustomPainter {
             ..strokeCap = StrokeCap.butt
             ..style = PaintingStyle.stroke;
 
-      if (action.shape == PaintTools.freeHand) {
+      if (action.shape == PaintingTools.freeHand) {
         for (int i = 0; i < action.points.length - 1; i++) {
           canvas.drawLine(action.points[i], action.points[i + 1], paint);
         }
-      } else if (action.shape == PaintTools.rectangle &&
+      } else if (action.shape == PaintingTools.rectangle &&
           action.points.length == 2) {
         RRect rect = RRect.fromRectAndRadius(
           Rect.fromPoints(action.points[0], action.points[1]),
           const Radius.circular(8),
         );
         canvas.drawRRect(rect, paint);
-      } else if (action.shape == PaintTools.circle &&
+      } else if (action.shape == PaintingTools.circle &&
           action.points.length == 2) {
         double radius = (action.points[0] - action.points[1]).distance / 2;
         Offset center = Offset(
@@ -39,7 +39,7 @@ class DrawingPainter extends CustomPainter {
           (action.points[0].dy + action.points[1].dy) / 2,
         );
         canvas.drawCircle(center, radius, paint);
-      } else if (action.shape == PaintTools.arrow &&
+      } else if (action.shape == PaintingTools.arrow &&
           action.points.length == 2) {
         // Get start and end points
         Offset start = action.points[0];
