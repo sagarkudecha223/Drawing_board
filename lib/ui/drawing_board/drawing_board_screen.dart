@@ -7,6 +7,7 @@ import '../../bloc/drawing_board/drawing_board_contract.dart';
 import '../../core/app_extension.dart';
 import '../../core/dimens.dart';
 import '../../core/enum.dart';
+import '../controllers/comment_mode/comment_view.dart';
 import '../controllers/drag_controller/drag_controller.dart';
 import '../controllers/drawing_mode/drawing_mode_view.dart';
 import '../controllers/image_controller/image_controller.dart';
@@ -60,6 +61,7 @@ class _MainContent extends StatelessWidget {
                 ignoring: bloc.state.drawingMode != DrawingMode.selectionMode,
                 child: DragControllerView(bloc: bloc),
               ),
+              CommentView(bloc: bloc),
               Padding(
                 padding: const EdgeInsets.all(Dimens.spaceSmall),
                 child: DrawingModeView(bloc: bloc),
