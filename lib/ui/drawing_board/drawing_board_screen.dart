@@ -7,6 +7,7 @@ import '../../bloc/drawing_board/drawing_board_contract.dart';
 import '../../core/app_extension.dart';
 import '../../core/dimens.dart';
 import '../../core/enum.dart';
+import '../controllers/drag_controller/drag_controller.dart';
 import '../controllers/drawing_mode/drawing_mode_view.dart';
 import '../controllers/image_controller/image_controller.dart';
 import '../painter/drawing_painter.dart';
@@ -42,22 +43,31 @@ class _MainContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      clipBehavior: Clip.antiAliasWithSaveLayer,
-      children: [
-        IgnorePointer(
-          ignoring: !(bloc.state.drawingMode == DrawingMode.addImageMode),
-          child: ImageDrawWidget(
-            controller: bloc.state.drawingController,
-            svgColor: bloc.state.selectedColor,
+    return LayoutBuilder(
+      builder:
+          (context, constraints) => Stack(
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            children: [
+              IgnorePointer(
+                ignoring: !(bloc.state.drawingMode == DrawingMode.addImageMode),
+                child: ImageDrawWidget(
+                  controller: bloc.state.drawingController,
+                  svgColor: bloc.state.selectedColor,
+                ),
+              ),
+              Positioned.fill(child: _GestureDetector(bloc: bloc)),
+              IgnorePointer(
+                ignoring: bloc.state.drawingMode != DrawingMode.selectionMode,
+                child: DragControllerView(bloc: bloc),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(Dimens.spaceSmall),
+                child: DrawingModeView(bloc: bloc),
+              ),
+              if (bloc.state.drawingMode == DrawingMode.selectionMode)
+                DragItemDeleteButton(bloc: bloc),
+            ],
           ),
-        ),
-        Positioned.fill(child: _GestureDetector(bloc: bloc)),
-        Padding(
-          padding: const EdgeInsets.all(Dimens.spaceSmall),
-          child: DrawingModeView(bloc: bloc),
-        ),
-      ],
     );
   }
 }

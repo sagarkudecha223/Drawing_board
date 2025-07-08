@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_base_architecture_plugin/core/logging.dart';
 import 'package:flutter_base_architecture_plugin/imports/dart_package_imports.dart';
 
 import '../../../bloc/drawing_board/drawing_board_bloc.dart';
@@ -27,9 +26,7 @@ class _DrawingModeViewState extends State<DrawingModeView> {
 
   void _togglePopup(DrawingMode mode) {
     if (_expandedMode == mode) {
-      printLog(message: _overlayEntry);
       if (_overlayEntry != null) {
-        printLog(message: '_overlayEntry Not null');
         widget.bloc.add(
           mode == DrawingMode.addImageMode
               ? SvgChangeEvent(
@@ -44,7 +41,6 @@ class _DrawingModeViewState extends State<DrawingModeView> {
           _overlayEntry = null;
         });
       } else {
-        printLog(message: '_overlayEntry null');
         _showOverlay(mode);
       }
     } else {
@@ -111,9 +107,10 @@ class _DrawingModeViewState extends State<DrawingModeView> {
 
   void _removeOverlay() {
     if (_overlayEntry != null) {
-      Future.delayed(const Duration(seconds: 1), () {
+      Future.delayed(const Duration(microseconds: 150), () {
         _overlayEntry?.remove();
         _overlayEntry = null;
+        if (!mounted) return;
         setState(() => _expandedMode = null);
       });
     }
