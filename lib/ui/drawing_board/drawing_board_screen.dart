@@ -44,32 +44,35 @@ class _MainContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder:
-          (context, constraints) => Stack(
-            clipBehavior: Clip.antiAliasWithSaveLayer,
-            children: [
-              IgnorePointer(
-                ignoring: !(bloc.state.drawingMode == DrawingMode.addImageMode),
-                child: ImageDrawWidget(
-                  controller: bloc.state.drawingController,
-                  svgColor: bloc.state.selectedColor,
+    return MouseRegion(
+      cursor: bloc.state.drawingMode.getCursorForMode(bloc.state.drawingMode),
+      child: LayoutBuilder(
+        builder:
+            (context, constraints) => Stack(
+              clipBehavior: Clip.antiAliasWithSaveLayer,
+              children: [
+                IgnorePointer(
+                  ignoring: !(bloc.state.drawingMode == DrawingMode.addImageMode),
+                  child: ImageDrawWidget(
+                    controller: bloc.state.drawingController,
+                    svgColor: bloc.state.selectedColor,
+                  ),
                 ),
-              ),
-              Positioned.fill(child: _GestureDetector(bloc: bloc)),
-              IgnorePointer(
-                ignoring: bloc.state.drawingMode != DrawingMode.selectionMode,
-                child: DragControllerView(bloc: bloc),
-              ),
-              CommentView(bloc: bloc),
-              Padding(
-                padding: const EdgeInsets.all(Dimens.spaceSmall),
-                child: DrawingModeView(bloc: bloc),
-              ),
-              if (bloc.state.drawingMode == DrawingMode.selectionMode)
-                DragItemDeleteButton(bloc: bloc),
-            ],
-          ),
+                Positioned.fill(child: _GestureDetector(bloc: bloc)),
+                IgnorePointer(
+                  ignoring: bloc.state.drawingMode != DrawingMode.selectionMode,
+                  child: DragControllerView(bloc: bloc),
+                ),
+                CommentView(bloc: bloc),
+                Padding(
+                  padding: const EdgeInsets.all(Dimens.spaceSmall),
+                  child: DrawingModeView(bloc: bloc),
+                ),
+                if (bloc.state.drawingMode == DrawingMode.selectionMode)
+                  DragItemDeleteButton(bloc: bloc),
+              ],
+            ),
+      ),
     );
   }
 }

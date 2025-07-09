@@ -5,6 +5,7 @@ import '../../core/dimens.dart';
 class AppTheme {
   static ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
+    fontFamily: 'Poppins',
     colorScheme: const ColorScheme.light(
       primary: AppColors.primaryBlue1,
       secondary: AppColors.secondary,
@@ -39,6 +40,7 @@ class AppTheme {
 
   static ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
+    fontFamily: 'Poppins',
     colorScheme: const ColorScheme.dark(
       primary: AppColors.primaryBlue1,
       secondary: AppColors.secondary,

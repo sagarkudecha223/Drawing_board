@@ -42,7 +42,7 @@ extension DrawingModeExtension on DrawingMode {
       case DrawingMode.commentMode:
         return 'Comment Mode';
       case DrawingMode.addImageMode:
-        return 'Add Image Mode';
+        return 'Image Mode';
       case DrawingMode.selectionMode:
         return 'Drag Mode';
     }
@@ -58,6 +58,19 @@ extension DrawingModeExtension on DrawingMode {
         return Images.imagesIcon;
       case DrawingMode.selectionMode:
         return Images.selection;
+    }
+  }
+
+  MouseCursor getCursorForMode(DrawingMode mode) {
+    switch (mode) {
+      case DrawingMode.paintMode:
+          return SystemMouseCursors.precise;
+      case DrawingMode.commentMode:
+        return SystemMouseCursors.text;
+      case DrawingMode.selectionMode:
+        return SystemMouseCursors.grabbing;
+      case DrawingMode.addImageMode:
+        return SystemMouseCursors.move;
     }
   }
 }
