@@ -2,6 +2,7 @@ import 'package:flutter/material.dart' as material;
 import 'package:flutter_base_architecture_plugin/imports/dart_package_imports.dart';
 
 import '../../core/enum.dart';
+import '../../ui/controllers/comment_mode/comment_model.dart';
 import '../../ui/controllers/drawing_controller/drawing_controller.dart';
 
 part 'drawing_board_contract.g.dart';
@@ -26,6 +27,12 @@ abstract class DrawingBoardData
   bool get svgOptionsVisible;
 
   material.Color get selectedColor;
+
+  List<CommentModel> get listOfComments;
+
+  material.Offset? get commentPosition;
+
+  material.TextEditingController get commentController;
 }
 
 abstract class DrawingBoardEvent {}
@@ -48,6 +55,22 @@ class SvgChangeEvent extends DrawingBoardEvent {
   final SvgImageOptions svgImageOptions;
 
   SvgChangeEvent({required this.svgImageOptions});
+}
+
+class AddCommentEvent extends DrawingBoardEvent {}
+
+class OutSideTapEvent extends DrawingBoardEvent {}
+
+class ShowAddCommentEvent extends DrawingBoardEvent {
+  final material.TapUpDetails tapUpDetails;
+
+  ShowAddCommentEvent({required this.tapUpDetails});
+}
+
+class DeleteCommentEvent extends DrawingBoardEvent {
+  final CommentModel commentModel;
+
+  DeleteCommentEvent({required this.commentModel});
 }
 
 class UpdateDrawingBoardState extends DrawingBoardEvent {

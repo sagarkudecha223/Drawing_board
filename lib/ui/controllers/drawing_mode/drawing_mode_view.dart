@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_base_architecture_plugin/core/logging.dart';
 import 'package:flutter_base_architecture_plugin/imports/dart_package_imports.dart';
 
 import '../../../bloc/drawing_board/drawing_board_bloc.dart';
@@ -8,6 +7,7 @@ import '../../../bloc/drawing_board/drawing_board_contract.dart';
 import '../../../core/app_extension.dart';
 import '../../../core/dimens.dart';
 import '../../../core/enum.dart';
+import '../../common/animated_container_button.dart';
 import '../../common/animated_list.dart';
 import '../../common/common_svg_button.dart';
 
@@ -27,9 +27,7 @@ class _DrawingModeViewState extends State<DrawingModeView> {
 
   void _togglePopup(DrawingMode mode) {
     if (_expandedMode == mode) {
-      printLog(message: _overlayEntry);
       if (_overlayEntry != null) {
-        printLog(message: '_overlayEntry Not null');
         widget.bloc.add(
           mode == DrawingMode.addImageMode
               ? SvgChangeEvent(
@@ -44,7 +42,6 @@ class _DrawingModeViewState extends State<DrawingModeView> {
           _overlayEntry = null;
         });
       } else {
-        printLog(message: '_overlayEntry null');
         _showOverlay(mode);
       }
     } else {
@@ -54,7 +51,7 @@ class _DrawingModeViewState extends State<DrawingModeView> {
 
   void _showOverlay(DrawingMode mode) async {
     if (_overlayEntry != null) {
-      await Future.delayed(Duration(milliseconds: 150)).then((value) {
+      await Future.delayed(Duration(milliseconds: 200)).then((value) {
         _overlayEntry?.remove();
         _overlayEntry = null;
       });
@@ -111,9 +108,10 @@ class _DrawingModeViewState extends State<DrawingModeView> {
 
   void _removeOverlay() {
     if (_overlayEntry != null) {
-      Future.delayed(const Duration(seconds: 1), () {
+      Future.delayed(const Duration(microseconds: 200), () {
         _overlayEntry?.remove();
         _overlayEntry = null;
+        if (!mounted) return;
         setState(() => _expandedMode = null);
       });
     }
@@ -149,22 +147,24 @@ class _DrawingModeViewState extends State<DrawingModeView> {
               final link = _links.putIfAbsent(element, () => LayerLink());
               return CompositedTransformTarget(
                 link: link,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: kIsWeb ? 3 : Dimens.spaceMin,
-                  ),
-                  child: CommonIconButton(
-                    isSelected: element == widget.bloc.state.drawingMode,
-                    svgIcon: _getSvg(element),
-                    onTap: () {
-                      widget.bloc.add(
-                        DrawingModeChangeEvent(drawingMode: element),
-                      );
-                      if (element == DrawingMode.addImageMode ||
-                          element == DrawingMode.paintMode) {
-                        _togglePopup(element);
-                      }
-                    },
+                child: Container(
+                  padding: const EdgeInsets.all(Dimens.space3xSmall),
+                  height: 55,
+                  child: Tooltip(
+                    message: element.toolTip,
+                    child: AnimatedContainerButton(
+                      isSelected: element == widget.bloc.state.drawingMode,
+                      svgIcon: _getSvg(element),
+                      onTap: () {
+                        widget.bloc.add(
+                          DrawingModeChangeEvent(drawingMode: element),
+                        );
+                        if (element == DrawingMode.addImageMode ||
+                            element == DrawingMode.paintMode) {
+                          _togglePopup(element);
+                        }
+                      },
+                    ),
                   ),
                 ),
               );
