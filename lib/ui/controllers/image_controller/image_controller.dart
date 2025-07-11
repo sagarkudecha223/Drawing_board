@@ -35,7 +35,7 @@ class ImageDrawWidget extends StatelessWidget {
                     child: SvgPicture.asset(
                       action.svgAsset!,
                       fit: BoxFit.contain,
-                      color: svgColor,
+                      color: action.color,
                     ),
                   );
                 }

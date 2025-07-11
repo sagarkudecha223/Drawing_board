@@ -20,11 +20,7 @@ abstract class DrawingBoardData
 
   PaintingTools get paintingTools;
 
-  bool get paintingToolsVisible;
-
   SvgImageOptions get selectedSvgImage;
-
-  bool get svgOptionsVisible;
 
   material.Color get selectedColor;
 
@@ -33,6 +29,10 @@ abstract class DrawingBoardData
   material.Offset? get commentPosition;
 
   material.TextEditingController get commentController;
+
+  bool get isCustomColorDialogShow;
+
+  int get alpha;
 }
 
 abstract class DrawingBoardEvent {}
@@ -71,6 +71,20 @@ class DeleteCommentEvent extends DrawingBoardEvent {
   final CommentModel commentModel;
 
   DeleteCommentEvent({required this.commentModel});
+}
+
+class CustomColorDialogShowEvent extends DrawingBoardEvent {}
+
+class ColorChangeEvent extends DrawingBoardEvent {
+  final material.Color color;
+
+  ColorChangeEvent({required this.color});
+}
+
+class AlphaChangeEvent extends DrawingBoardEvent {
+  final int value;
+
+  AlphaChangeEvent({required this.value});
 }
 
 class UpdateDrawingBoardState extends DrawingBoardEvent {

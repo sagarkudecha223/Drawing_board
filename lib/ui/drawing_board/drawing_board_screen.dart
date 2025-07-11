@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_base_architecture_plugin/imports/core_imports.dart';
 import 'package:flutter_base_architecture_plugin/imports/dart_package_imports.dart';
-
 import '../../bloc/drawing_board/drawing_board_bloc.dart';
 import '../../bloc/drawing_board/drawing_board_contract.dart';
 import '../../core/app_extension.dart';
 import '../../core/dimens.dart';
 import '../../core/enum.dart';
+import '../controllers/bottom_controller/bottom_controller.dart';
+import '../controllers/color_picker_controller/color_picker_view.dart';
 import '../controllers/comment_mode/comment_view.dart';
 import '../controllers/drag_controller/drag_controller.dart';
 import '../controllers/drawing_mode/drawing_mode_view.dart';
@@ -25,6 +26,7 @@ class _DrawingBoardScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: BlocProvider<DrawingBoardBloc>(
           create: (_) => bloc,
@@ -52,7 +54,8 @@ class _MainContent extends StatelessWidget {
               clipBehavior: Clip.antiAliasWithSaveLayer,
               children: [
                 IgnorePointer(
-                  ignoring: !(bloc.state.drawingMode == DrawingMode.addImageMode),
+                  ignoring:
+                      !(bloc.state.drawingMode == DrawingMode.addImageMode),
                   child: ImageDrawWidget(
                     controller: bloc.state.drawingController,
                     svgColor: bloc.state.selectedColor,
@@ -70,6 +73,11 @@ class _MainContent extends StatelessWidget {
                 ),
                 if (bloc.state.drawingMode == DrawingMode.selectionMode)
                   DragItemDeleteButton(bloc: bloc),
+                BottomViewControllerView(bloc: bloc),
+                Align(
+                  alignment: Alignment.bottomLeft,
+                  child: ColorPickerDialog(bloc: bloc),
+                ),
               ],
             ),
       ),
@@ -89,7 +97,7 @@ class _GestureDetector extends StatelessWidget {
       onPanStart:
           (details) => bloc.state.drawingController.startDrawing(
             details.localPosition,
-            bloc.state.selectedColor,
+            bloc.state.selectedColor.withAlpha(bloc.state.alpha),
             1.0,
             bloc.state.paintingTools,
             bloc.state.selectedSvgImage.image,

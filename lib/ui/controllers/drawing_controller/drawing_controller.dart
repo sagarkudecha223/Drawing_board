@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/colors.dart';
 import '../../../core/constants.dart';
 import '../../../core/enum.dart';
 import 'draw_action_model.dart';
@@ -27,7 +26,7 @@ class CustomDrawingController extends ValueNotifier<List<DrawActionModel>> {
   ) {
     _currentAction = DrawActionModel(
       points: [point],
-      color: isImageMode ? AppColors.transparent : color,
+      color: color,
       strokeWidth: strokeWidth,
       shape: tools,
       svgAsset: isImageMode ? image : null,

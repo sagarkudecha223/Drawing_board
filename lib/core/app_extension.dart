@@ -45,6 +45,8 @@ extension DrawingModeExtension on DrawingMode {
         return 'Image Mode';
       case DrawingMode.selectionMode:
         return 'Drag Mode';
+      case DrawingMode.colorPalette:
+        return 'Color palette';
     }
   }
 
@@ -58,19 +60,23 @@ extension DrawingModeExtension on DrawingMode {
         return Images.imagesIcon;
       case DrawingMode.selectionMode:
         return Images.selection;
+      case DrawingMode.colorPalette:
+        return Images.colorPalette;
     }
   }
 
   MouseCursor getCursorForMode(DrawingMode mode) {
     switch (mode) {
       case DrawingMode.paintMode:
-          return SystemMouseCursors.precise;
+        return SystemMouseCursors.precise;
       case DrawingMode.commentMode:
         return SystemMouseCursors.text;
       case DrawingMode.selectionMode:
         return SystemMouseCursors.grabbing;
       case DrawingMode.addImageMode:
         return SystemMouseCursors.move;
+      case DrawingMode.colorPalette:
+        return SystemMouseCursors.click;
     }
   }
 }
@@ -112,7 +118,7 @@ extension SvgImageOptionsExtension on SvgImageOptions {
         return Images.star;
       case SvgImageOptions.cross:
         return Images.cross;
-      }
+    }
   }
 
   String get toolTip {
@@ -123,6 +129,30 @@ extension SvgImageOptionsExtension on SvgImageOptions {
         return 'Star';
       case SvgImageOptions.cross:
         return 'Cross';
+    }
+  }
+}
+
+extension DrawingToolExtension on DrawingToolEnum {
+  String get icon {
+    switch (this) {
+      case DrawingToolEnum.undo:
+        return Images.undo;
+      case DrawingToolEnum.redo:
+        return Images.redo;
+      case DrawingToolEnum.delete:
+        return Images.delete;
+    }
+  }
+
+  String get tooltip {
+    switch (this) {
+      case DrawingToolEnum.undo:
+        return 'Undo';
+      case DrawingToolEnum.redo:
+        return 'Redo';
+      case DrawingToolEnum.delete:
+        return 'Delete';
     }
   }
 }

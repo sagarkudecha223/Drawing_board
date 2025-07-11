@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'measure_size.dart';
 
@@ -35,7 +34,10 @@ class _AnimatedInitListState extends State<AnimatedInitList> {
   @override
   void initState() {
     super.initState();
-    _playForward();
+    _animatedItems = [];
+    if (widget.isVisible) {
+      _playForward();
+    }
   }
 
   @override

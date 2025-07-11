@@ -19,5 +19,5 @@ class Images {
   static const star = '${_directory}star.svg';
   static const cross = '${_directory}cross.svg';
   static const selection = '${_directory}selection.svg';
-
+  static const colorPalette = '${_directory}color_palette.svg';
 }
