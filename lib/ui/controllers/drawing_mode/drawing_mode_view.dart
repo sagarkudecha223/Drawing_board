@@ -1,6 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_base_architecture_plugin/imports/dart_package_imports.dart';
 
 import '../../../bloc/drawing_board/drawing_board_bloc.dart';
 import '../../../bloc/drawing_board/drawing_board_contract.dart';
@@ -22,105 +23,133 @@ class DrawingModeView extends StatefulWidget {
 
 class _DrawingModeViewState extends State<DrawingModeView> {
   final Map<DrawingMode, LayerLink> _links = {};
-  OverlayEntry? _overlayEntry;
-  DrawingMode? _expandedMode;
+  OverlayEntry? _activeOverlay;
+  GlobalKey<_PopupListState>? _overlayKey;
+  Completer<void>? _dismissCompleter;
 
   void _togglePopup(DrawingMode mode) {
-    if (_expandedMode == mode) {
-      if (_overlayEntry != null) {
-        widget.bloc.add(
-          mode == DrawingMode.addImageMode
-              ? SvgChangeEvent(
-                svgImageOptions: widget.bloc.state.selectedSvgImage,
-              )
-              : PaintingToolsChangeEvent(
-                paintTools: widget.bloc.state.paintingTools,
-              ),
-        );
-        Future.delayed(Duration(milliseconds: 200)).then((value) {
-          _overlayEntry?.remove();
-          _overlayEntry = null;
-        });
+    widget.bloc.add(DrawingModeChangeEvent(drawingMode: mode));
+    if (widget.bloc.state.drawingMode == mode) {
+      if (_activeOverlay == null) {
+        _showPopup(mode);
       } else {
-        _showOverlay(mode);
+        _removePopup();
       }
     } else {
-      _showOverlay(mode);
+      _removePopup().then((_) {
+        Future.delayed(
+          const Duration(milliseconds: 50),
+          () => _showPopup(mode),
+        );
+      });
     }
   }
 
-  void _showOverlay(DrawingMode mode) async {
-    if (_overlayEntry != null) {
-      await Future.delayed(Duration(milliseconds: 200)).then((value) {
-        _overlayEntry?.remove();
-        _overlayEntry = null;
-      });
+  Future<void> _removePopup() async {
+    final popupKey = _overlayKey;
+    _overlayKey = null;
+
+    if (popupKey?.currentState != null) {
+      _dismissCompleter = Completer<void>();
+      await popupKey!.currentState!.dismissWithAnimation();
+      await _dismissCompleter!.future;
     }
 
-    final link = _links[mode];
-    if (link == null) return;
+    setState(() {});
+    _activeOverlay?.remove();
+    _activeOverlay = null;
+  }
 
-    _overlayEntry = OverlayEntry(
+  void _showPopup(DrawingMode mode) {
+    if (mode == DrawingMode.commentMode ||
+        mode == DrawingMode.selectionMode ||
+        mode == DrawingMode.colorPalette) {
+      return;
+    }
+    final link = _links.putIfAbsent(mode, () => LayerLink());
+    final key = GlobalKey<_PopupListState>();
+
+    final entry = OverlayEntry(
       builder:
-          (context) => Stack(
-            children: [
-              CompositedTransformFollower(
-                link: link,
-                showWhenUnlinked: false,
-                targetAnchor: Alignment.bottomCenter,
-                followerAnchor: Alignment.topCenter,
-                offset: Offset(
-                  0,
-                  kIsWeb ? Dimens.space3xSmall : -Dimens.iconSmall,
+          (context) => Positioned.fill(
+            child: Stack(
+              children: [
+                CompositedTransformFollower(
+                  link: link,
+                  targetAnchor: Alignment.bottomCenter,
+                  followerAnchor: Alignment.topCenter,
+                  offset: Offset(
+                    0,
+                    kIsWeb ? Dimens.space3xSmall : -Dimens.iconSmall,
+                  ),
+                  showWhenUnlinked: false,
+                  child: _PopupList(
+                    key: key,
+                    onClose: () => _dismissCompleter?.complete(),
+                    children:
+                        mode == DrawingMode.paintMode
+                            ? PaintingTools.values
+                                .where(
+                                  (element) =>
+                                      element !=
+                                      widget.bloc.state.paintingTools,
+                                )
+                                .map(
+                                  (element) => Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: Dimens.spaceMin,
+                                      vertical: kIsWeb ? 2 : 0,
+                                    ),
+                                    child: CommonIconButton(
+                                      svgIcon: element.icon,
+                                      onTap: () {
+                                        widget.bloc.add(
+                                          PaintingToolsChangeEvent(
+                                            paintTools: element,
+                                          ),
+                                        );
+                                        _removePopup();
+                                      },
+                                    ),
+                                  ),
+                                )
+                                .toList()
+                            : SvgImageOptions.values
+                                .where(
+                                  (element) =>
+                                      element !=
+                                      widget.bloc.state.selectedSvgImage,
+                                )
+                                .map(
+                                  (element) => Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: Dimens.spaceMin,
+                                      vertical: kIsWeb ? 2 : 0,
+                                    ),
+                                    child: CommonIconButton(
+                                      svgIcon: element.image,
+                                      onTap: () {
+                                        widget.bloc.add(
+                                          SvgChangeEvent(
+                                            svgImageOptions: element,
+                                          ),
+                                        );
+                                        _removePopup();
+                                      },
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                  ),
                 ),
-                child: BlocBuilder<DrawingBoardBloc, DrawingBoardData>(
-                  bloc: widget.bloc,
-                  builder: (context, state) {
-                    if (mode == DrawingMode.addImageMode) {
-                      return _SvgImageOptionsView(
-                        bloc: widget.bloc,
-                        onReverseComplete: () {
-                          _overlayEntry?.remove();
-                          _overlayEntry = null;
-                          setState(() => _expandedMode = null);
-                        },
-                      );
-                    } else {
-                      return _PaintingToolsOptionsView(
-                        bloc: widget.bloc,
-                        onReverseComplete: () {
-                          _overlayEntry?.remove();
-                          _overlayEntry = null;
-                          setState(() => _expandedMode = null);
-                        },
-                      );
-                    }
-                  },
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
     );
 
-    Overlay.of(context).insert(_overlayEntry!);
-    setState(() => _expandedMode = mode);
-  }
-
-  void _removeOverlay() {
-    if (_overlayEntry != null) {
-      Future.delayed(const Duration(microseconds: 200), () {
-        _overlayEntry?.remove();
-        _overlayEntry = null;
-        if (!mounted) return;
-        setState(() => _expandedMode = null);
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    _removeOverlay();
-    super.dispose();
+    Overlay.of(context).insert(entry);
+    _activeOverlay = entry;
+    _overlayKey = key;
   }
 
   String _getSvg(DrawingMode drawingMode) {
@@ -133,120 +162,77 @@ class _DrawingModeViewState extends State<DrawingModeView> {
         return DrawingMode.selectionMode.image;
       case DrawingMode.addImageMode:
         return widget.bloc.state.selectedSvgImage.image;
+      case DrawingMode.colorPalette:
+        return DrawingMode.colorPalette.image;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.topLeft,
+    return AnimatedInitList(
+      direction: Axis.horizontal,
+      children:
+          DrawingMode.values.map((element) {
+            final link = _links.putIfAbsent(element, () => LayerLink());
+            return CompositedTransformTarget(
+              link: link,
+              child: Container(
+                padding: const EdgeInsets.all(Dimens.space3xSmall),
+                height: 55,
+                child: Tooltip(
+                  message: element.toolTip,
+                  child: AnimatedContainerButton(
+                    isSelected: element == widget.bloc.state.drawingMode,
+                    svgIcon: _getSvg(element),
+                    onTap: () => _togglePopup(element),
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+    );
+  }
+}
+
+class _PopupList extends StatefulWidget {
+  final List<Widget> children;
+  final VoidCallback onClose;
+
+  const _PopupList({super.key, required this.children, required this.onClose});
+
+  @override
+  State<_PopupList> createState() => _PopupListState();
+}
+
+class _PopupListState extends State<_PopupList> {
+  bool isVisible = true;
+  bool _isDismissing = false;
+  Completer<void>? _localCompleter;
+
+  Future<void> dismissWithAnimation() {
+    if (_isDismissing) return _localCompleter?.future ?? Future.value();
+
+    _isDismissing = true;
+    _localCompleter = Completer<void>();
+
+    setState(() => isVisible = false);
+
+    return _localCompleter!.future;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
       child: AnimatedInitList(
-        direction: Axis.horizontal,
-        children:
-            DrawingMode.values.map((element) {
-              final link = _links.putIfAbsent(element, () => LayerLink());
-              return CompositedTransformTarget(
-                link: link,
-                child: Container(
-                  padding: const EdgeInsets.all(Dimens.space3xSmall),
-                  height: 55,
-                  child: Tooltip(
-                    message: element.toolTip,
-                    child: AnimatedContainerButton(
-                      isSelected: element == widget.bloc.state.drawingMode,
-                      svgIcon: _getSvg(element),
-                      onTap: () {
-                        widget.bloc.add(
-                          DrawingModeChangeEvent(drawingMode: element),
-                        );
-                        if (element == DrawingMode.addImageMode ||
-                            element == DrawingMode.paintMode) {
-                          _togglePopup(element);
-                        }
-                      },
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
+        isVisible: isVisible,
+        direction: Axis.vertical,
+        onReverseComplete: () {
+          widget.onClose();
+          _localCompleter?.complete();
+        },
+        children: widget.children,
       ),
-    );
-  }
-}
-
-class _SvgImageOptionsView extends StatelessWidget {
-  final DrawingBoardBloc bloc;
-  final VoidCallback onReverseComplete;
-
-  const _SvgImageOptionsView({
-    required this.bloc,
-    required this.onReverseComplete,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedInitList(
-      direction: Axis.vertical,
-      isVisible: bloc.state.svgOptionsVisible,
-      onReverseComplete: () => onReverseComplete,
-      children:
-          SvgImageOptions.values
-              .where((element) => element != bloc.state.selectedSvgImage)
-              .map((element) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: Dimens.spaceMin,
-                    vertical: kIsWeb ? 2 : 0,
-                  ),
-                  child: CommonIconButton(
-                    isSelected: element == bloc.state.selectedSvgImage,
-                    svgIcon: element.image,
-                    onTap:
-                        () =>
-                            bloc.add(SvgChangeEvent(svgImageOptions: element)),
-                  ),
-                );
-              })
-              .toList(),
-    );
-  }
-}
-
-class _PaintingToolsOptionsView extends StatelessWidget {
-  final DrawingBoardBloc bloc;
-  final VoidCallback onReverseComplete;
-
-  const _PaintingToolsOptionsView({
-    required this.bloc,
-    required this.onReverseComplete,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedInitList(
-      direction: Axis.vertical,
-      isVisible: bloc.state.paintingToolsVisible,
-      onReverseComplete: () => onReverseComplete,
-      children:
-          PaintingTools.values
-              .where((element) => element != bloc.state.paintingTools)
-              .map(
-                (element) => Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: Dimens.spaceMin,
-                    vertical: kIsWeb ? 2 : 0,
-                  ),
-                  child: CommonIconButton(
-                    isSelected: element == bloc.state.paintingTools,
-                    svgIcon: element.icon,
-                    onTap:
-                        () => bloc.add(
-                          PaintingToolsChangeEvent(paintTools: element),
-                        ),
-                  ),
-                ),
-              )
-              .toList(),
     );
   }
 }

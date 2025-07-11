@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_base_architecture_plugin/imports/core_imports.dart';
 
-import '../../core/colors.dart';
 import '../../core/enum.dart';
 import '../../ui/controllers/comment_mode/comment_model.dart';
 import '../../ui/controllers/drawing_controller/drawing_controller.dart';
@@ -17,6 +16,9 @@ class DrawingBoardBloc extends BaseBloc<DrawingBoardEvent, DrawingBoardData> {
     on<AddCommentEvent>(_addCommentEvent);
     on<OutSideTapEvent>(_outSideTapEvent);
     on<DeleteCommentEvent>(_deleteCommentEvent);
+    on<CustomColorDialogShowEvent>(_customColorDialogShowEvent);
+    on<ColorChangeEvent>(_colorChangeEvent);
+    on<AlphaChangeEvent>(_alphaChangeEvent);
     on<UpdateDrawingBoardState>((event, emit) => emit(event.state));
   }
 
@@ -25,13 +27,13 @@ class DrawingBoardBloc extends BaseBloc<DrawingBoardEvent, DrawingBoardData> {
             ..drawingController = CustomDrawingController()
             ..drawingMode = DrawingMode.paintMode
             ..paintingTools = PaintingTools.freeHand
-            ..paintingToolsVisible = true
-            ..svgOptionsVisible = false
             ..selectedSvgImage = SvgImageOptions.spiderWeb
             ..commentController = TextEditingController()
             ..listOfComments = []
             ..commentPosition = null
-            ..selectedColor = AppColors.white)
+            ..isCustomColorDialogShow = false
+            ..alpha = 255
+            ..selectedColor = const Color(0xFF9E9E9E))
           .build();
 
   void _initDrawingBoardEvent(_, __) {}
@@ -42,38 +44,57 @@ class DrawingBoardBloc extends BaseBloc<DrawingBoardEvent, DrawingBoardData> {
         (u) =>
             u
               ..drawingMode = event.drawingMode
-              ..paintingToolsVisible =
-                  state.paintingToolsVisible == true
-                      ? false
-                      : event.drawingMode == DrawingMode.paintMode
-              ..svgOptionsVisible =
-                  state.svgOptionsVisible == true
-                      ? false
-                      : event.drawingMode == DrawingMode.addImageMode
+              ..isCustomColorDialogShow = false
               ..commentController?.clear()
-              ..commentPosition = null,
+              ..commentPosition = null
+              ..isCustomColorDialogShow =
+                  event.drawingMode == DrawingMode.colorPalette
+                      ? !state.isCustomColorDialogShow
+                      : false,
       ),
     ),
   );
 
   void _paintingToolsChangeEvent(PaintingToolsChangeEvent event, __) => add(
     UpdateDrawingBoardState(
-      state.rebuild(
-        (u) =>
-            u
-              ..paintingTools = event.paintTools
-              ..paintingToolsVisible = false,
-      ),
+      state.rebuild((u) => u.paintingTools = event.paintTools),
     ),
   );
 
   void _svgChangeEvent(SvgChangeEvent event, __) => add(
     UpdateDrawingBoardState(
+      state.rebuild((u) => u..selectedSvgImage = event.svgImageOptions),
+    ),
+  );
+
+  void _customColorDialogShowEvent(_, __) => add(
+    UpdateDrawingBoardState(
+      state.rebuild(
+        (u) => u.isCustomColorDialogShow = !state.isCustomColorDialogShow,
+      ),
+    ),
+  );
+
+  void _colorChangeEvent(ColorChangeEvent event, __) {
+    add(
+      UpdateDrawingBoardState(
+        state.rebuild(
+          (u) =>
+              u
+                ..selectedColor = event.color
+                ..alpha = 255,
+        ),
+      ),
+    );
+  }
+
+  void _alphaChangeEvent(AlphaChangeEvent event, __) => add(
+    UpdateDrawingBoardState(
       state.rebuild(
         (u) =>
             u
-              ..selectedSvgImage = event.svgImageOptions
-              ..svgOptionsVisible = false,
+              ..alpha = event.value
+              ..selectedColor?.withAlpha(event.value),
       ),
     ),
   );

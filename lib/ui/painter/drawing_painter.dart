@@ -13,6 +13,7 @@ class DrawingPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     for (var action in controller.value) {
+      if (action.svgAsset != null) continue;
       Paint paint =
           Paint()
             ..color = action.color
@@ -45,16 +46,12 @@ class DrawingPainter extends CustomPainter {
         Offset start = action.points[0];
         Offset end = action.points[1];
 
-        // Draw the arrow shaft (main line)
         canvas.drawLine(start, end, paint);
 
-        // Calculate the direction vector
-        const double arrowLength = 20.0; // Length of arrowhead lines
-        const double angle = 30.0; // Angle of arrowhead (in degrees)
-        const double radians =
-            angle * (3.14159265359 / 180.0); // Convert angle to radians
+        const double arrowLength = 20.0;
+        const double angle = 30.0;
+        const double radians = angle * (3.14159265359 / 180.0);
 
-        // Calculate the vector from end to start
         Offset direction =
             Offset(start.dx - end.dx, start.dy - end.dy).normalize();
 
