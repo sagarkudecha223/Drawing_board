@@ -4,7 +4,10 @@ class AppColors {
   static bool isLightTheme = false;
 
   // Primary brand color
-  static const Color primary = Color(0xFFBB86FC);
+  static const Color primaryBlue1 = Color(0xFF254D99);
+  static const Color primaryBlue2 = Color(0xFF549DD6);
+  static const Color pastelBlue = Color(0xFFA3C8F0);
+  static const Color mutedPeach = Color(0xFFF6C5B2);
   static const Color secondary = Color(0xFF03DAC6);
 
   // Light theme
@@ -49,6 +52,12 @@ class AppColors {
       isLightTheme ? lightTextMedium : darkTextMedium;
 
   static Color get backgroundColor => isLightTheme ? lightSurface : darkSurface;
+
+  static Color get selectedIconColor =>
+      isLightTheme ? lightBackground : darkBackground;
+
+  static Color get selectedIconBackgroundColor =>
+      isLightTheme ? lightTextMedium : darkTextMedium;
 
   static Color get shadowColor =>
       isLightTheme ? lightTextDisabled : darkTextMedium;

@@ -3,6 +3,8 @@ import 'package:flutter_base_architecture_plugin/imports/core_imports.dart';
 import 'package:flutter_base_architecture_plugin/imports/dart_package_imports.dart';
 import 'package:flutter_base_architecture_plugin/imports/injector_imports.dart';
 import '../base_arch_config/base_arch_config.dart';
+import '../bloc/bottom_drawing_controller/bottom_drawing_controller_bloc.dart';
+import '../bloc/drawing_board/drawing_board_bloc.dart';
 import '../bloc/main_app/main_app_bloc.dart';
 import '../core/cache/preference_store.dart';
 import '../services/theme_service/app_theme.dart';
@@ -48,5 +50,7 @@ abstract class Injector extends BaseInjector {
 
   /// Register Bloc dependencies
   @Register.factory(MainAppBloc)
+  @Register.factory(DrawingBoardBloc)
+  @Register.factory(BottomDrawingControllerBloc)
   void _registerBlocProviders();
 }
